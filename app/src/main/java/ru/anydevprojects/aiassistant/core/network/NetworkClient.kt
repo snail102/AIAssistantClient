@@ -8,16 +8,45 @@ import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.header
 import io.ktor.http.*
-import io.ktor.http.ContentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-private const val BASE_URL = "http://10.0.2.2:8080/"
+const val BASE_URL = "http://192.168.31.32:8080/"
+
+val client = HttpClient(CIO) {
+    install(ContentNegotiation) {
+        defaultRequest {
+            url("http://192.168.31.32:8080/")
+            contentType(ContentType.Application.Json)
+        }
+        json(
+            Json {
+                prettyPrint = true
+                isLenient = true
+                ignoreUnknownKeys = true
+            }
+        )
+        install(Logging) {
+            logger = Logger.DEFAULT
+            level = LogLevel.ALL
+        }
+    }
+}
 
 internal fun getNetworkClient(): HttpClient {
-    return HttpClient(CIO) {
+    return HttpClient(CIO).config {
         install(ContentNegotiation) {
+            defaultRequest {
+                url {
+                    protocol = URLProtocol.HTTPS
+                    host = "ktor.io"
+                    parameters.append("token", "abc123")
+                }
+                contentType(ContentType.Application.Json)
+                header("X-Custom-Header", "Hello")
+            }
             json(
                 Json {
                     prettyPrint = true
@@ -28,10 +57,6 @@ internal fun getNetworkClient(): HttpClient {
             install(Logging) {
                 logger = Logger.DEFAULT
                 level = LogLevel.ALL
-            }
-            defaultRequest {
-                contentType(ContentType.Application.Json)
-                url(BASE_URL)
             }
         }
     }
