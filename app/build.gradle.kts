@@ -79,4 +79,5 @@ dependencies {
 
     implementation(libs.datastore.preferences)
     implementation(libs.kotlin.serialization.json)
+    implementation(libs.navigation.compose)
 }
