@@ -7,6 +7,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ru.anydevprojects.aiassistant.feature.authorization.presentation.AuthorizationScreen
+import ru.anydevprojects.aiassistant.feature.authorization.presentation.AuthorizationScreenNavigation
 import ru.anydevprojects.aiassistant.feature.chat.presentation.ChatScreen
 import ru.anydevprojects.aiassistant.feature.chat.presentation.ChatScreenNavigation
 import ru.anydevprojects.aiassistant.ui.theme.AIAssistantTheme
@@ -24,6 +26,10 @@ class MainActivity : ComponentActivity() {
                 ) {
                     composable<ChatScreenNavigation> {
                         ChatScreen()
+                    }
+
+                    composable<AuthorizationScreenNavigation> {
+                        AuthorizationScreen()
                     }
                 }
             }
