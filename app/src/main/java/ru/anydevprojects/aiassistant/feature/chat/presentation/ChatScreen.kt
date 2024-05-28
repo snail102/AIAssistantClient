@@ -38,7 +38,9 @@ fun ChatScreen(viewModel: ChatViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsState()
 
     Scaffold(
-        modifier = Modifier.fillMaxSize().imePadding()
+        modifier = Modifier
+            .fillMaxSize()
+            .imePadding()
     ) {
 //        ModalBottomSheet(
 //            modifier = Modifier,
@@ -64,6 +66,15 @@ fun ChatScreen(viewModel: ChatViewModel = koinViewModel()) {
                         content = chatMessageUi.content
                     )
                 }
+            }
+
+            if (state.errorMessage.isNotEmpty()) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    text = state.errorMessage
+                )
             }
 
             BottomInputControl(
@@ -106,7 +117,9 @@ private fun BottomInputControl(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier.fillMaxWidth().padding(16.dp)
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
     ) {
         TextField(
             modifier = Modifier

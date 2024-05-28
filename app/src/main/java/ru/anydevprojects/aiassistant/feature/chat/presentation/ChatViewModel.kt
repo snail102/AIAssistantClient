@@ -1,6 +1,5 @@
 package ru.anydevprojects.aiassistant.feature.chat.presentation
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,7 +43,8 @@ class ChatViewModel(
                         isLoading = true,
                         messages = it.messages + ChatMessageUi.UserChatMessage(
                             content = inputtedMessage
-                        )
+                        ),
+                        errorMessage = ""
                     )
                 }
                 chatRepository.sendMessage(message = inputtedMessage)
@@ -54,15 +54,16 @@ class ChatViewModel(
                                 isLoading = false,
                                 messages = lastState.messages + chatMessages.map { message ->
                                     ChatMessageUi.AssistantChatMessage(content = message.content)
-                                }
+                                },
+                                errorMessage = ""
                             )
                         }
                     }
-                    .onFailure {
-                        Log.d("error", it.toString())
+                    .onFailure { throwable ->
                         _state.update {
                             it.copy(
-                                isLoading = false
+                                isLoading = false,
+                                errorMessage = throwable.message ?: "Unknown error"
                             )
                         }
                     }

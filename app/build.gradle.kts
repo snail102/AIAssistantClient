@@ -76,4 +76,7 @@ dependencies {
     implementation(libs.ktor.client.logging)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.client.content.negotiation)
+
+    implementation(libs.datastore.preferences)
+    implementation(libs.kotlin.serialization.json)
 }
