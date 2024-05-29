@@ -12,8 +12,9 @@ import io.ktor.client.request.header
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import ru.anydevprojects.aiassistant.core.network.NetworkConstants.HTTP_HEADER_AUTHORIZATION
 
-const val BASE_URL = "http://192.168.31.32:8080/"
+private const val BASE_URL = "http://192.168.31.32:8080/"
 
 internal fun getNetworkClient(): HttpClient {
     return HttpClient(CIO) {
@@ -33,7 +34,7 @@ internal fun getNetworkClient(): HttpClient {
         defaultRequest {
             url(BASE_URL)
             contentType(ContentType.Application.Json)
-            header("User", "Admin")
+            header(HTTP_HEADER_AUTHORIZATION, "Bearer ANY_TOKEN")
         }
     }
 }
