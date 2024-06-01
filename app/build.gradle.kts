@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.koin.compose)
 
     implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.auth)
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.logging)
     implementation(libs.ktor.serialization.kotlinx.json)
@@ -80,4 +81,5 @@ dependencies {
     implementation(libs.datastore.preferences)
     implementation(libs.kotlin.serialization.json)
     implementation(libs.navigation.compose)
+    implementation(libs.splashscreen)
 }
