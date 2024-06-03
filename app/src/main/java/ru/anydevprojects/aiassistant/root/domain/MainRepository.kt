@@ -1,6 +1,8 @@
 package ru.anydevprojects.aiassistant.root.domain
 
+import kotlinx.coroutines.flow.Flow
+
 interface MainRepository {
 
-    suspend fun hasSavedTokens(): Boolean
+    fun isAuthorized(): Flow<Boolean>
 }
