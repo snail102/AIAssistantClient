@@ -15,6 +15,10 @@ import ru.anydevprojects.aiassistant.feature.authorization.presentation.Authoriz
 import ru.anydevprojects.aiassistant.feature.authorization.presentation.AuthorizationScreenNavigation
 import ru.anydevprojects.aiassistant.feature.chat.presentation.ChatScreen
 import ru.anydevprojects.aiassistant.feature.chat.presentation.ChatScreenNavigation
+import ru.anydevprojects.aiassistant.feature.registration.presentation.RegistrationScreen
+import ru.anydevprojects.aiassistant.feature.registration.presentation.RegistrationScreenNavigation
+import ru.anydevprojects.aiassistant.feature.settings.presentation.SettingsScreen
+import ru.anydevprojects.aiassistant.feature.settings.presentation.SettingsScreenNavigation
 import ru.anydevprojects.aiassistant.ui.theme.AIAssistantTheme
 
 class MainActivity : ComponentActivity() {
@@ -22,7 +26,9 @@ class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val splashScreen = installSplashScreen()
+        installSplashScreen().apply {
+            setKeepOnScreenCondition { viewModel.state.value.isLoading }
+        }
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -36,11 +42,34 @@ class MainActivity : ComponentActivity() {
                     startDestination = ChatScreenNavigation
                 ) {
                     composable<ChatScreenNavigation> {
-                        ChatScreen()
+                        ChatScreen(
+                            onSettingsClick = {
+                            }
+                        )
                     }
 
                     composable<AuthorizationScreenNavigation> {
-                        AuthorizationScreen()
+                        AuthorizationScreen(
+                            onRegistrationClick = {
+                                navController.navigate(RegistrationScreenNavigation)
+                            }
+                        )
+                    }
+
+                    composable<RegistrationScreenNavigation> {
+                        RegistrationScreen(
+                            onBackClick = {
+                                navController.popBackStack()
+                            }
+                        )
+                    }
+
+                    composable<SettingsScreenNavigation> {
+                        SettingsScreen(
+                            onBackClick = {
+                                navController.popBackStack()
+                            }
+                        )
                     }
                 }
             }

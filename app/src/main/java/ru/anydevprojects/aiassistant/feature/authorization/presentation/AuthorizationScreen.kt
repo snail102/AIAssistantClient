@@ -4,5 +4,8 @@ import androidx.compose.runtime.Composable
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun AuthorizationScreen(viewModel: AuthorizationViewModel = koinViewModel()) {
+fun AuthorizationScreen(
+    onRegistrationClick: () -> Unit,
+    viewModel: AuthorizationViewModel = koinViewModel()
+) {
 }

@@ -34,7 +34,7 @@ import ru.anydevprojects.aiassistant.feature.chat.presentation.models.ChatMessag
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen(viewModel: ChatViewModel = koinViewModel()) {
+fun ChatScreen(onSettingsClick: () -> Unit, viewModel: ChatViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsState()
 
     Scaffold(
