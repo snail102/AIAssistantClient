@@ -7,6 +7,6 @@ import ru.anydevprojects.aiassistant.feature.settings.domain.SettingsRepository
 import ru.anydevprojects.aiassistant.feature.settings.presentation.SettingsViewModel
 
 val settingsModule = module {
-    factory<SettingsRepository> { SettingsRepositoryImpl() }
+    factory<SettingsRepository> { SettingsRepositoryImpl(get()) }
     viewModel { SettingsViewModel(get()) }
 }

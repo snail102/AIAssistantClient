@@ -12,12 +12,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
+import androidx.navigation.toRoute
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.anydevprojects.aiassistant.core.ui.SIDE_EFFECTS_KEY
 import ru.anydevprojects.aiassistant.feature.authorization.presentation.AuthorizationScreen
 import ru.anydevprojects.aiassistant.feature.authorization.presentation.AuthorizationScreenNavigation
 import ru.anydevprojects.aiassistant.feature.chat.presentation.ChatScreen
 import ru.anydevprojects.aiassistant.feature.chat.presentation.ChatScreenNavigation
+import ru.anydevprojects.aiassistant.feature.registration.presentation.ConfirmEmailScreen
+import ru.anydevprojects.aiassistant.feature.registration.presentation.ConfirmEmailScreenNavigation
 import ru.anydevprojects.aiassistant.feature.registration.presentation.RegistrationScreen
 import ru.anydevprojects.aiassistant.feature.registration.presentation.RegistrationScreenNavigation
 import ru.anydevprojects.aiassistant.feature.settings.presentation.SettingsScreen
@@ -73,6 +76,7 @@ class MainActivity : ComponentActivity() {
                     composable<ChatScreenNavigation> {
                         ChatScreen(
                             onSettingsClick = {
+                                navController.navigate(SettingsScreenNavigation)
                             }
                         )
                     }
@@ -87,6 +91,21 @@ class MainActivity : ComponentActivity() {
 
                     composable<RegistrationScreenNavigation> {
                         RegistrationScreen(
+                            onBackClick = {
+                                navController.popBackStack()
+                            },
+                            confirmEmailToScreen = { login ->
+                                navController.navigate(
+                                    ConfirmEmailScreenNavigation(login = login)
+                                )
+                            }
+                        )
+                    }
+
+                    composable<ConfirmEmailScreenNavigation> {
+                        val args = it.toRoute<ConfirmEmailScreenNavigation>()
+                        ConfirmEmailScreen(
+                            login = args.login,
                             onBackClick = {
                                 navController.popBackStack()
                             }

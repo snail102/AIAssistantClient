@@ -1,7 +1,5 @@
 package ru.anydevprojects.aiassistant.tokenStorage
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.datastore.core.Serializer
 import java.io.InputStream
 import java.io.OutputStream
@@ -10,7 +8,6 @@ import kotlinx.serialization.json.Json
 import ru.anydevprojects.aiassistant.cryptoManager.CryptoManager
 import ru.anydevprojects.aiassistant.domain.models.Token
 
-@RequiresApi(Build.VERSION_CODES.M)
 class TokenStorageSerializerApiM(
     private val cryptoManager: CryptoManager
 ) : Serializer<Token> {

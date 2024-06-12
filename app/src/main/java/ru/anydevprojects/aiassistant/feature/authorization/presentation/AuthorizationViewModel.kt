@@ -22,11 +22,7 @@ class AuthorizationViewModel(
     private val _state: MutableStateFlow<AuthorizationState> =
         MutableStateFlow(AuthorizationState())
     val state = _state.map {
-        if (it.login.isNotBlank() && it.password.isNotBlank()) {
-            it.copy(enabledAuthBtn = true)
-        } else {
-            it
-        }
+        it.copy(enabledAuthBtn = it.login.isNotBlank() && it.password.isNotBlank())
     }.stateIn(
         viewModelScope,
         SharingStarted.Lazily,
@@ -70,12 +66,16 @@ class AuthorizationViewModel(
                             isLoading = false
                         )
                     }
+                    _event.send(AuthorizationEvent.ShowErrorMessage(it.message.orEmpty()))
                 }
             }
         }
     }
 
     private fun changeLogin(newValue: String) {
+        if (_state.value.isLoading) {
+            return
+        }
         _state.update {
             it.copy(
                 login = newValue
@@ -84,6 +84,9 @@ class AuthorizationViewModel(
     }
 
     private fun changePassword(newValue: String) {
+        if (_state.value.isLoading) {
+            return
+        }
         _state.update {
             it.copy(
                 password = newValue

@@ -1,9 +1,12 @@
 package ru.anydevprojects.aiassistant.feature.settings.data
 
 import ru.anydevprojects.aiassistant.feature.settings.domain.SettingsRepository
+import ru.anydevprojects.aiassistant.tokenStorage.TokenStorage
 
-class SettingsRepositoryImpl : SettingsRepository {
+class SettingsRepositoryImpl(
+    private val tokenStorage: TokenStorage
+) : SettingsRepository {
     override suspend fun logOut() {
-        TODO("Not yet implemented")
+        tokenStorage.removeTokens()
     }
 }

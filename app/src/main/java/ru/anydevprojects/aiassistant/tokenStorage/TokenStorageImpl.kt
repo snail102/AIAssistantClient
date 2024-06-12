@@ -2,7 +2,6 @@ package ru.anydevprojects.aiassistant.tokenStorage
 
 import android.app.Application
 import android.content.Context
-import android.os.Build
 import android.util.Log
 import androidx.datastore.core.Serializer
 import androidx.datastore.dataStore
@@ -45,11 +44,7 @@ class TokenStorageImpl(
     )
 
     private fun getTokenStorageSerializer(): Serializer<Token> {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            TokenStorageSerializerApiM(cryptoManager)
-        } else {
-            TokenStorageSerializer()
-        }
+        return TokenStorageSerializer()
     }
 
     override suspend fun initToken(): Token {
@@ -72,6 +67,14 @@ class TokenStorageImpl(
     override suspend fun getToken(): Token {
         return withContext(Dispatchers.IO) {
             application.applicationContext.dataStore.data.first()
+        }
+    }
+
+    override suspend fun removeTokens() {
+        withContext(Dispatchers.IO) {
+            application.applicationContext.dataStore.updateData {
+                Token(access = "", refresh = "")
+            }
         }
     }
 }

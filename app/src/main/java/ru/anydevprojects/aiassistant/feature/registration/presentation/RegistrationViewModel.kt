@@ -23,7 +23,12 @@ class RegistrationViewModel(
         RegistrationState()
     )
     val state = _state.map {
-        it.copy()
+        it.copy(
+            enabledRegisterBtn = it.login.isNotBlank() &&
+                it.password.isNotBlank() &&
+                it.password == it.confirmPassword &&
+                it.email.isNotBlank()
+        )
     }.stateIn(
         viewModelScope,
         SharingStarted.Lazily,
@@ -38,6 +43,7 @@ class RegistrationViewModel(
             is RegistrationIntent.OnChangeConfirmPassword -> changeConfirmPassword(
                 intent.newConfirmPassword
             )
+
             is RegistrationIntent.OnChangeEmail -> changeEmail(intent.newEmail)
             is RegistrationIntent.OnChangeLogin -> changeLogin(intent.newLogin)
             is RegistrationIntent.OnChangePassword -> changePassword(intent.newPassword)
@@ -101,7 +107,7 @@ class RegistrationViewModel(
                         )
                     }
 
-                    _event.send(RegistrationEvent.NavigateToConfirmationEmail)
+                    _event.send(RegistrationEvent.NavigateToConfirmationEmail(login = login))
                 }.onFailure {
                     _state.update {
                         it.copy(

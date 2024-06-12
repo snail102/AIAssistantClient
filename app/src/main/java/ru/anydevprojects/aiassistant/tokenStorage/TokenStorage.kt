@@ -16,4 +16,6 @@ interface TokenStorage {
     suspend fun saveToken(token: Token)
 
     suspend fun getToken(): Token
+
+    suspend fun removeTokens()
 }

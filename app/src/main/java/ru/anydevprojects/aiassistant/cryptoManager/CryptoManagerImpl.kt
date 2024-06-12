@@ -1,9 +1,7 @@
 package ru.anydevprojects.aiassistant.cryptoManager
 
-import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import androidx.annotation.RequiresApi
 import java.io.InputStream
 import java.io.OutputStream
 import java.security.KeyStore
@@ -12,7 +10,6 @@ import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
 
-@RequiresApi(Build.VERSION_CODES.M)
 class CryptoManagerImpl : CryptoManager {
 
     private val keyStore = KeyStore.getInstance(KEYSTORE_TYPE).apply {
@@ -31,6 +28,9 @@ class CryptoManagerImpl : CryptoManager {
     }
 
     private fun getKey(): SecretKey {
+        if (!keyStore.containsAlias(KEYSTORE_ALIAS)) {
+            return createKey()
+        }
         val existingKey = keyStore.getEntry(KEYSTORE_ALIAS, null) as? KeyStore.SecretKeyEntry
         return existingKey?.secretKey ?: createKey()
     }
@@ -44,8 +44,6 @@ class CryptoManagerImpl : CryptoManager {
                 )
                     .setBlockModes(BLOCK_MODE)
                     .setEncryptionPaddings(PADDING)
-                    .setUserAuthenticationRequired(false)
-                    .setRandomizedEncryptionRequired(true)
                     .build()
             )
         }.generateKey()
@@ -80,8 +78,8 @@ class CryptoManagerImpl : CryptoManager {
         private const val KEYSTORE_TYPE = "AndroidKeyStore"
         private const val KEYSTORE_ALIAS = "SecretKey"
         private const val ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
-        private const val BLOCK_MODE = KeyProperties.BLOCK_MODE_CBC
-        private const val PADDING = KeyProperties.ENCRYPTION_PADDING_PKCS7
+        private const val BLOCK_MODE = KeyProperties.BLOCK_MODE_GCM
+        private const val PADDING = KeyProperties.ENCRYPTION_PADDING_NONE
         private const val TRANSFORMATION = "$ALGORITHM/$BLOCK_MODE/$PADDING"
     }
 }

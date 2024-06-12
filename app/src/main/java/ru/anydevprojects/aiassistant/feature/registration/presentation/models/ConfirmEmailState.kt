@@ -1,6 +1,7 @@
 package ru.anydevprojects.aiassistant.feature.registration.presentation.models
 
 data class ConfirmEmailState(
-    val isLoading: Boolean = false,
+    val isCheckCorrectCode: Boolean = false,
+    val isProcessingSendRetryCode: Boolean = false,
     val code: String = ""
 )
