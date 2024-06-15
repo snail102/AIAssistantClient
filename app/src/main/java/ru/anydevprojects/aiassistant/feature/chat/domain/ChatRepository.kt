@@ -4,5 +4,5 @@ import ru.anydevprojects.aiassistant.feature.chat.domain.models.ChatMessage
 
 interface ChatRepository {
 
-    suspend fun sendMessage(message: String): Result<List<ChatMessage>>
+    suspend fun sendMessage(chatId: Int, message: String): Result<List<ChatMessage>>
 }

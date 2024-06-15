@@ -5,8 +5,8 @@ import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
-import ru.anydevprojects.aiassistant.feature.chat.data.models.ChatMessageResponse
 import ru.anydevprojects.aiassistant.feature.chat.data.models.ChatRequest
+import ru.anydevprojects.aiassistant.feature.chat.data.models.MessageResponse
 import ru.anydevprojects.aiassistant.feature.chat.domain.ChatRepository
 import ru.anydevprojects.aiassistant.feature.chat.domain.models.ChatMessage
 
@@ -16,20 +16,22 @@ class ChatRepositoryImpl(
     private val httpClient: HttpClient
 ) : ChatRepository {
 
-    override suspend fun sendMessage(message: String): Result<List<ChatMessage>> {
+    override suspend fun sendMessage(chatId: Int, message: String): Result<List<ChatMessage>> {
         // return Result.success(listOf(ChatMessage(Random.nextLong().toString())))
         return kotlin.runCatching {
             val chatRequest: ChatRequest = ChatRequest(
+                chatId = chatId,
                 content = message
             )
             val response: HttpResponse = httpClient.post(CHAT_PATH) {
                 setBody(chatRequest)
             }
 
-            val chatResponse = response.body<ChatMessageResponse>()
+            val chatResponse = response.body<MessageResponse>()
             listOf(
                 ChatMessage(
-                    content = chatResponse.choices.first().message.content
+                    chatId = chatResponse.chatId,
+                    content = chatResponse.content
                 )
             )
         }

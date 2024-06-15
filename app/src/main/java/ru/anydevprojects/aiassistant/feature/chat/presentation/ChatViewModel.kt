@@ -18,6 +18,8 @@ class ChatViewModel(
     private val _state = MutableStateFlow<ChatState>(ChatState())
     val state = _state.asStateFlow()
 
+    private var chatId: Int = 0
+
     fun onIntent(intent: ChatIntent) {
         when (intent) {
             is ChatIntent.OnChangeMessage -> updateInputtedMessage(intent.message)
@@ -47,8 +49,9 @@ class ChatViewModel(
                         errorMessage = ""
                     )
                 }
-                chatRepository.sendMessage(message = inputtedMessage)
+                chatRepository.sendMessage(chatId = chatId, message = inputtedMessage)
                     .onSuccess { chatMessages ->
+                        chatId = chatMessages.last().chatId
                         _state.update { lastState ->
                             lastState.copy(
                                 isLoading = false,
