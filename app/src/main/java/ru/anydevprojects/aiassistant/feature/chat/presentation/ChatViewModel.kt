@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.anydevprojects.aiassistant.feature.chat.domain.ChatRepository
 import ru.anydevprojects.aiassistant.feature.chat.presentation.models.ChatIntent
-import ru.anydevprojects.aiassistant.feature.chat.presentation.models.ChatMessageUi
 import ru.anydevprojects.aiassistant.feature.chat.presentation.models.ChatState
+import ru.anydevprojects.aiassistant.feature.chat.presentation.models.MessageUi
 
 class ChatViewModel(
     private val chatRepository: ChatRepository
@@ -20,10 +20,68 @@ class ChatViewModel(
 
     private var chatId: Int = 0
 
+    init {
+        loadChatAll()
+    }
+
     fun onIntent(intent: ChatIntent) {
         when (intent) {
             is ChatIntent.OnChangeMessage -> updateInputtedMessage(intent.message)
             ChatIntent.SendMessage -> sendMessage()
+            is ChatIntent.OnChatHistoryClick -> selectChatFromHistory(intent.chatId)
+        }
+    }
+
+    private fun selectChatFromHistory(chatId: Int) {
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    isLoadingCurrentChatMessages = true
+                )
+            }
+
+            chatRepository.getChatMessageHistory(chatId = chatId).onSuccess { chatMessageHistory ->
+                this@ChatViewModel.chatId = chatMessageHistory.chatId
+                _state.update {
+                    it.copy(
+                        isLoadingCurrentChatMessages = false,
+                        messages = chatMessageHistory.messages.map { messageHistory ->
+                            messageHistory.toUi()
+                        }
+                    )
+                }
+            }.onFailure {
+                _state.update {
+                    it.copy(
+                        isLoadingCurrentChatMessages = false,
+                        messages = emptyList()
+                    )
+                }
+            }
+        }
+    }
+
+    private fun loadChatAll() {
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    isLoadingChatAll = true
+                )
+            }
+            chatRepository.getChatAll().onSuccess { chatHistoryList ->
+                _state.update {
+                    it.copy(
+                        isLoadingChatAll = false,
+                        chatHistory = chatHistoryList
+                    )
+                }
+            }.onFailure {
+                _state.update {
+                    it.copy(
+                        isLoadingChatAll = false
+                    )
+                }
+            }
         }
     }
 
@@ -42,8 +100,9 @@ class ChatViewModel(
             if (inputtedMessage.isNotBlank()) {
                 _state.update {
                     it.copy(
-                        isLoading = true,
-                        messages = it.messages + ChatMessageUi.UserChatMessage(
+                        isLoadingCurrentChatMessages = true,
+                        messages = it.messages + MessageUi.UserMessage(
+                            id = (it.messages.lastOrNull()?.id ?: 0) + 1,
                             content = inputtedMessage
                         ),
                         errorMessage = ""
@@ -54,9 +113,12 @@ class ChatViewModel(
                         chatId = chatMessages.last().chatId
                         _state.update { lastState ->
                             lastState.copy(
-                                isLoading = false,
+                                isLoadingCurrentChatMessages = false,
                                 messages = lastState.messages + chatMessages.map { message ->
-                                    ChatMessageUi.AssistantChatMessage(content = message.content)
+                                    MessageUi.AssistantMessage(
+                                        id = (lastState.messages.lastOrNull()?.id ?: 0) + 1,
+                                        content = message.content
+                                    )
                                 },
                                 errorMessage = ""
                             )
@@ -65,7 +127,7 @@ class ChatViewModel(
                     .onFailure { throwable ->
                         _state.update {
                             it.copy(
-                                isLoading = false,
+                                isLoadingCurrentChatMessages = false,
                                 errorMessage = throwable.message ?: "Unknown error"
                             )
                         }

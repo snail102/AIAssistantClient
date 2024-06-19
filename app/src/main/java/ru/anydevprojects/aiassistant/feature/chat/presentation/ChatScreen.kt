@@ -19,20 +19,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
-import androidx.compose.material3.DismissibleDrawerSheet
-import androidx.compose.material3.DismissibleNavigationDrawer
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -48,7 +47,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import ru.anydevprojects.aiassistant.feature.chat.presentation.models.ChatIntent
-import ru.anydevprojects.aiassistant.feature.chat.presentation.models.ChatMessageUi
+import ru.anydevprojects.aiassistant.feature.chat.presentation.models.MessageUi
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,76 +58,93 @@ fun ChatScreen(onSettingsClick: () -> Unit, viewModel: ChatViewModel = koinViewM
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    DismissibleNavigationDrawer(
+    ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = false,
         drawerContent = {
-            DismissibleDrawerSheet(
-                drawerContainerColor = Color.LightGray
-            ) {
-                NavigationDrawerItem(
-                    modifier = Modifier.padding(horizontal = 12.dp),
-                    label = { Text(text = "Label 1") },
-                    selected = false,
-                    onClick = { }
-                )
+            ModalDrawerSheet {
+                if (state.isLoadingChatAll) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    LazyColumn {
+                        items(
+                            items = state.chatHistory,
+                            key = {
+                                it.chatId
+                            }
+                        ) { chatHistory ->
+                            NavigationDrawerItem(
+                                modifier = Modifier.padding(horizontal = 12.dp),
+                                label = { Text(text = chatHistory.firstMessagePreview) },
+                                selected = false,
+                                onClick = { }
+                            )
+                        }
+                    }
+                }
             }
-        },
-        content = {
-            Scaffold(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .imePadding(),
-                topBar = {
-                    TopAppBar(
-                        title = {},
-                        navigationIcon = {
-                            IconButton(
-                                onClick = {
-                                    scope.launch {
-                                        if (drawerState.isOpen) {
-                                            drawerState.close()
-                                        } else {
-                                            drawerState.open()
-                                        }
+        }
+    ) {
+        Scaffold(
+            modifier = Modifier
+                .fillMaxSize()
+                .imePadding(),
+            topBar = {
+                TopAppBar(
+                    title = {},
+                    navigationIcon = {
+                        IconButton(
+                            onClick = {
+                                scope.launch {
+                                    if (drawerState.isOpen) {
+                                        drawerState.close()
+                                    } else {
+                                        drawerState.open()
                                     }
                                 }
-                            ) {
-                                if (drawerState.isClosed) {
-                                    Icon(
-                                        Icons.Default.Menu,
-                                        contentDescription = "Open all dialogs"
-                                    )
-                                } else {
-                                    Icon(
-                                        Icons.Default.Close,
-                                        contentDescription = "Close all dialogs"
-                                    )
-                                }
                             }
-                        },
-                        actions = {
-                            IconButton(
-                                onClick = onSettingsClick
-                            ) {
+                        ) {
+                            if (drawerState.isClosed) {
                                 Icon(
-                                    Icons.Default.Settings,
-                                    contentDescription = "Settings"
+                                    Icons.Default.Menu,
+                                    contentDescription = "Open all dialogs"
+                                )
+                            } else {
+                                Icon(
+                                    Icons.Default.Close,
+                                    contentDescription = "Close all dialogs"
                                 )
                             }
                         }
-                    )
-                }
+                    },
+                    actions = {
+                        IconButton(
+                            onClick = onSettingsClick
+                        ) {
+                            Icon(
+                                Icons.Default.Settings,
+                                contentDescription = "Settings"
+                            )
+                        }
+                    }
+                )
+            }
+        ) {
+            Column(
+                modifier = Modifier.padding(it)
             ) {
-//        ModalBottomSheet(
-//            modifier = Modifier,
-//            onDismissRequest = {
-//            }
-//        ) {
-
-                Column(
-                    modifier = Modifier.padding(it)
-                ) {
+                if (state.isLoadingCurrentChatMessages) {
+//                        Box(
+//                            modifier = Modifier,
+//                            contentAlignment = Alignment.Center
+//                        ) {
+//                            CircularProgressIndicator()
+//                        }
+                } else {
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -141,7 +157,7 @@ fun ChatScreen(onSettingsClick: () -> Unit, viewModel: ChatViewModel = koinViewM
                             }
                         ) { chatMessageUi ->
                             MessageItem(
-                                isUser = chatMessageUi is ChatMessageUi.UserChatMessage,
+                                isUser = chatMessageUi is MessageUi.UserMessage,
                                 content = chatMessageUi.content
                             )
                         }
@@ -169,10 +185,8 @@ fun ChatScreen(onSettingsClick: () -> Unit, viewModel: ChatViewModel = koinViewM
                     )
                 }
             }
-
-            //   }
         }
-    )
+    }
 }
 
 @Composable
