@@ -19,6 +19,8 @@ import ru.anydevprojects.aiassistant.feature.authorization.presentation.Authoriz
 import ru.anydevprojects.aiassistant.feature.authorization.presentation.AuthorizationScreenNavigation
 import ru.anydevprojects.aiassistant.feature.chat.presentation.ChatScreen
 import ru.anydevprojects.aiassistant.feature.chat.presentation.ChatScreenNavigation
+import ru.anydevprojects.aiassistant.feature.profile.presentation.ProfileScreen
+import ru.anydevprojects.aiassistant.feature.profile.presentation.ProfileScreenNavigation
 import ru.anydevprojects.aiassistant.feature.registration.presentation.ConfirmEmailScreen
 import ru.anydevprojects.aiassistant.feature.registration.presentation.ConfirmEmailScreenNavigation
 import ru.anydevprojects.aiassistant.feature.registration.presentation.RegistrationScreen
@@ -75,8 +77,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     composable<ChatScreenNavigation> {
                         ChatScreen(
-                            onSettingsClick = {
-                                navController.navigate(SettingsScreenNavigation)
+                            profileToScreen = {
+                                navController.navigate(ProfileScreenNavigation)
                             }
                         )
                     }
@@ -108,6 +110,17 @@ class MainActivity : ComponentActivity() {
                             login = args.login,
                             onBackClick = {
                                 navController.popBackStack()
+                            }
+                        )
+                    }
+
+                    composable<ProfileScreenNavigation> {
+                        ProfileScreen(
+                            onBackClick = {
+                                navController.popBackStack()
+                            },
+                            settingsToScreen = {
+                                navController.navigate(SettingsScreenNavigation)
                             }
                         )
                     }

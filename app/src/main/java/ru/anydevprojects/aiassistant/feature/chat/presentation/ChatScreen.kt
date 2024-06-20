@@ -19,7 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
@@ -52,7 +52,7 @@ import ru.anydevprojects.aiassistant.feature.chat.presentation.models.MessageUi
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen(onSettingsClick: () -> Unit, viewModel: ChatViewModel = koinViewModel()) {
+fun ChatScreen(profileToScreen: () -> Unit, viewModel: ChatViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsState()
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -123,11 +123,11 @@ fun ChatScreen(onSettingsClick: () -> Unit, viewModel: ChatViewModel = koinViewM
                     },
                     actions = {
                         IconButton(
-                            onClick = onSettingsClick
+                            onClick = profileToScreen
                         ) {
                             Icon(
-                                Icons.Default.Settings,
-                                contentDescription = "Settings"
+                                Icons.Default.Person,
+                                contentDescription = "Profile"
                             )
                         }
                     }

@@ -5,6 +5,7 @@ import ru.anydevprojects.aiassistant.core.network.networkModule
 import ru.anydevprojects.aiassistant.cryptoManager.di.cryptoManagerModule
 import ru.anydevprojects.aiassistant.feature.authorization.di.authorizationModule
 import ru.anydevprojects.aiassistant.feature.chat.di.chatModule
+import ru.anydevprojects.aiassistant.feature.profile.di.profileModule
 import ru.anydevprojects.aiassistant.feature.registration.di.registrationModule
 import ru.anydevprojects.aiassistant.feature.settings.di.settingsModule
 import ru.anydevprojects.aiassistant.root.di.mainModule
@@ -19,6 +20,7 @@ val appModule = module {
         authorizationModule,
         mainModule,
         registrationModule,
-        settingsModule
+        settingsModule,
+        profileModule
     )
 }
