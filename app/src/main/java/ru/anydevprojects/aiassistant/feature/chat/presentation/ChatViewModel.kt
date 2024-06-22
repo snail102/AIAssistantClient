@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.anydevprojects.aiassistant.feature.chat.domain.ChatRepository
+import ru.anydevprojects.aiassistant.feature.chat.presentation.mappers.toUi
 import ru.anydevprojects.aiassistant.feature.chat.presentation.models.ChatIntent
 import ru.anydevprojects.aiassistant.feature.chat.presentation.models.ChatState
 import ru.anydevprojects.aiassistant.feature.chat.presentation.models.MessageUi

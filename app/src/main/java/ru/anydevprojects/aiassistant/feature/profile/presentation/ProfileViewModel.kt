@@ -32,7 +32,7 @@ class ProfileViewModel(
             profileRepository.getUserGptTokenStatistics().onSuccess { userGptTokenStatistics ->
                 _state.update {
                     it.copy(
-                        isLoadingUserGptTokens = true,
+                        isLoadingUserGptTokens = false,
                         gptTokenStatistics = userGptTokenStatistics
                     )
                 }

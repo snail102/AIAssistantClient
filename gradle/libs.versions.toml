@@ -14,6 +14,7 @@ datastore = "1.1.1"
 kotlinSerializationJson = "1.6.3"
 navigationCompose = "2.8.0-beta02"
 splashscreen = "1.2.0-alpha01"
+slf4j = "1.7.25"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,6 +35,7 @@ ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref =
 ktor-client-auth = { group = "io.ktor", name = "ktor-client-auth", version.ref = "ktor" }
 ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
 ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
+ktor-client-logging-slf4j = { group = "org.slf4j", name = "slf4j-android", version.ref = "slf4j" }
 ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 koin-compose = { group = "io.insert-koin", name = "koin-androidx-compose" }

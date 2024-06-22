@@ -1,4 +1,4 @@
-package ru.anydevprojects.aiassistant.feature.chat.presentation
+package ru.anydevprojects.aiassistant.feature.chat.presentation.mappers
 
 import ru.anydevprojects.aiassistant.feature.chat.domain.models.MessageHistory
 import ru.anydevprojects.aiassistant.feature.chat.presentation.models.MessageUi

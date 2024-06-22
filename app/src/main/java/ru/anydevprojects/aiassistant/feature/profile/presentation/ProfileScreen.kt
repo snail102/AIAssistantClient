@@ -35,26 +35,29 @@ fun ProfileScreen(
         }
     ) { paddingValues ->
         Column(
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
             if (state.isLoadingUserGptTokens) {
                 CircularProgressIndicator()
-            }
-            state.gptTokenStatistics?.let {
-                GptTokenStatisticsCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    availableGtpTokens = it.availableGptTokens,
-                    usedGptTokens = it.usedGptTokens
+            } else {
+                state.gptTokenStatistics?.let {
+                    GptTokenStatisticsCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        availableGtpTokens = it.availableGptTokens,
+                        usedGptTokens = it.usedGptTokens
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                DefaultButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(32.dp),
+                    onClick = settingsToScreen,
+                    text = "Настройки"
                 )
             }
-            Spacer(modifier = Modifier.weight(1f))
-            DefaultButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(32.dp),
-                onClick = settingsToScreen,
-                text = "Настройки"
-            )
         }
     }
 }

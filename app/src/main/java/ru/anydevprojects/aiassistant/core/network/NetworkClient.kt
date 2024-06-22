@@ -20,6 +20,7 @@ import io.ktor.client.request.url
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import ru.anydevprojects.aiassistant.domain.models.Token
 import ru.anydevprojects.aiassistant.tokenStorage.TokenStorage
 
 private const val BASE_URL = "http://192.168.31.32:8080/"
@@ -37,7 +38,7 @@ internal fun getNetworkClient(tokenStorage: TokenStorage): HttpClient {
         }
         install(Logging) {
             logger = Logger.DEFAULT
-            level = LogLevel.ALL
+            level = LogLevel.BODY
         }
         defaultRequest {
             url(BASE_URL)
@@ -47,15 +48,29 @@ internal fun getNetworkClient(tokenStorage: TokenStorage): HttpClient {
         install(Auth) {
             bearer {
                 refreshTokens {
-                    val token = client.post {
-                        markAsRefreshTokenRequest()
-                        url("refresh")
-                        setBody(RefreshTokenRequest(refreshToken = tokenStorage.getToken().refresh))
-                    }.body<TokenResponse>()
-                    BearerTokens(
-                        accessToken = token.accessToken,
-                        refreshToken = token.refreshToken
-                    )
+                    runCatching {
+                        val tokenResponse = client.post {
+                            markAsRefreshTokenRequest()
+                            contentType(ContentType.Application.Json)
+                            url("/refresh")
+                            setBody(
+                                RefreshTokenRequest(refreshToken = tokenStorage.getToken().refresh)
+                            )
+                        }
+                        val token = tokenResponse.body<TokenResponse>()
+                        tokenStorage.saveToken(
+                            Token(
+                                access = token.accessToken,
+                                refresh = token.refreshToken
+                            )
+                        )
+                        BearerTokens(
+                            accessToken = token.accessToken,
+                            refreshToken = token.refreshToken
+                        )
+                    }.onFailure {
+                        tokenStorage.removeTokens()
+                    }.getOrNull()
                 }
             }
         }
