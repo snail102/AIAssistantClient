@@ -2,9 +2,11 @@ package ru.anydevprojects.aiassistant.root.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -30,21 +32,23 @@ class MainViewModel(
     }
 
     private fun checkTokens() {
-        mainRepository.isAuthorized().onEach { isAuthorized ->
-            _state.update {
-                it.copy(
-                    isLoading = false,
-                    isAuthorized = isAuthorized
-                )
-            }
-
-            if (this.isAuthorized != isAuthorized) {
-                if (!isAuthorized) {
-                    _event.send(MainEvent.NavigateToAuthorization)
-                } else {
-                    _event.send(MainEvent.NavigateToChat)
+        mainRepository.isAuthorized()
+            .flowOn(Dispatchers.IO)
+            .onEach { isAuthorized ->
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        isAuthorized = isAuthorized
+                    )
                 }
-            }
-        }.launchIn(viewModelScope)
+
+                if (this.isAuthorized != isAuthorized) {
+                    if (!isAuthorized) {
+                        _event.send(MainEvent.NavigateToAuthorization)
+                    } else {
+                        _event.send(MainEvent.NavigateToChat)
+                    }
+                }
+            }.launchIn(viewModelScope)
     }
 }

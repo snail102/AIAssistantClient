@@ -1,5 +1,6 @@
 package ru.anydevprojects.aiassistant.root.data
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import ru.anydevprojects.aiassistant.root.domain.MainRepository
@@ -11,6 +12,9 @@ class MainRepositoryImpl(
 
     override fun isAuthorized(): Flow<Boolean> {
         return tokenStorage.getTokenFlow()
-            .map { token -> token.access.isNotEmpty() && token.refresh.isNotEmpty() }
+            .map { token ->
+                Log.d("tokenStorage", token.toString())
+                token.access.isNotEmpty() && token.refresh.isNotEmpty()
+            }
     }
 }
