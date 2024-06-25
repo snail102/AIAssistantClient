@@ -1,6 +1,7 @@
 package ru.anydevprojects.aiassistant.di
 
 import org.koin.dsl.module
+import ru.anydevprojects.aiassistant.core.database.databaseModule
 import ru.anydevprojects.aiassistant.core.network.networkModule
 import ru.anydevprojects.aiassistant.cryptoManager.di.cryptoManagerModule
 import ru.anydevprojects.aiassistant.feature.authorization.di.authorizationModule
@@ -21,6 +22,7 @@ val appModule = module {
         mainModule,
         registrationModule,
         settingsModule,
-        profileModule
+        profileModule,
+        databaseModule
     )
 }

@@ -7,6 +7,7 @@ import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
+import ru.anydevprojects.aiassistant.feature.chat.data.mappers.toEntity
 import ru.anydevprojects.aiassistant.feature.chat.data.models.ChatHistoryDto
 import ru.anydevprojects.aiassistant.feature.chat.data.models.ChatMessageHistoryDto
 import ru.anydevprojects.aiassistant.feature.chat.data.models.ChatRequest
@@ -23,10 +24,11 @@ private const val CHAT_MESSAGE_HISTORY_PATH = "chat_message_history"
 private const val CHAT_ID_PARAMETER_CHAT_MESSAGE_HISTORY = "chat_id"
 
 class ChatRepositoryImpl(
-    private val httpClient: HttpClient
+    private val httpClient: HttpClient,
+    private val chatLocalDataSource: ChatLocalDataSource
 ) : ChatRepository {
-    override suspend fun getChatMessageHistory(chatId: Int): Result<ChatMessageHistory> {
-        return kotlin.runCatching {
+    override suspend fun getChatMessageHistory(chatId: Int): Result<ChatMessageHistory> =
+        kotlin.runCatching {
             val response: HttpResponse = httpClient.get(CHAT_MESSAGE_HISTORY_PATH) {
                 parameter(key = CHAT_ID_PARAMETER_CHAT_MESSAGE_HISTORY, value = chatId)
             }
@@ -42,21 +44,21 @@ class ChatRepositoryImpl(
                 }
             )
         }
-    }
 
-    override suspend fun getChatAll(): Result<List<ChatHistory>> {
-        return kotlin.runCatching {
-            val response: HttpResponse = httpClient.get(CHAT_ALL_PATH)
-            val chatAllResponse = response.body<List<ChatHistoryDto>>()
-            chatAllResponse.map {
-                ChatHistory(
-                    chatId = it.chatId,
-                    firstMessagePreview = it.firstMessagePreview,
-                    createdDate = it.createdDate,
-                    lastChangedDate = it.lastChangedDate
-                )
-            }
+    override suspend fun getChatAll(): Result<List<ChatHistory>> = kotlin.runCatching {
+        val response: HttpResponse = httpClient.get(CHAT_ALL_PATH)
+        val chatAllResponse = response.body<List<ChatHistoryDto>>()
+        val chats = chatAllResponse.map {
+            ChatHistory(
+                chatId = it.chatId,
+                firstMessagePreview = it.firstMessagePreview,
+                createdDate = it.createdDate,
+                lastChangedDate = it.lastChangedDate
+            )
         }
+        chatLocalDataSource.saveChats(chats.map { it.toEntity() })
+
+        chats
     }
 
     override suspend fun sendMessage(chatId: Int, message: String): Result<List<ChatMessage>> {

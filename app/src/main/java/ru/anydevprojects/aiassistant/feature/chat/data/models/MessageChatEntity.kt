@@ -1,3 +1,3 @@
 package ru.anydevprojects.aiassistant.feature.chat.data.models
 
-class MessagesEntity
+class MessageChatEntity
