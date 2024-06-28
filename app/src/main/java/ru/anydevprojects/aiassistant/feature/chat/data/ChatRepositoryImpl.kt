@@ -7,6 +7,9 @@ import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import ru.anydevprojects.aiassistant.feature.chat.data.mappers.toDomain
 import ru.anydevprojects.aiassistant.feature.chat.data.mappers.toEntity
 import ru.anydevprojects.aiassistant.feature.chat.data.models.ChatHistoryDto
 import ru.anydevprojects.aiassistant.feature.chat.data.models.ChatMessageHistoryDto
@@ -27,6 +30,20 @@ class ChatRepositoryImpl(
     private val httpClient: HttpClient,
     private val chatLocalDataSource: ChatLocalDataSource
 ) : ChatRepository {
+
+    override val chatHistory: Flow<List<ChatHistory>>
+        get() = chatLocalDataSource.getChats()
+            .map { chatHistoryList ->
+                chatHistoryList.map { chatHistory -> chatHistory.toDomain() }
+            }
+
+    override fun getMessages(chatId: Int): Flow<List<MessageHistory>> =
+        chatLocalDataSource.getMessagesByChatId(chatId = chatId).map { messages ->
+            messages.map {
+                it.toDomain()
+            }
+        }
+
     override suspend fun getChatMessageHistory(chatId: Int): Result<ChatMessageHistory> =
         kotlin.runCatching {
             val response: HttpResponse = httpClient.get(CHAT_MESSAGE_HISTORY_PATH) {

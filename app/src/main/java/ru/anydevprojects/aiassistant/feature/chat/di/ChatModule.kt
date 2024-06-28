@@ -10,5 +10,5 @@ import ru.anydevprojects.aiassistant.feature.chat.presentation.ChatViewModel
 val chatModule = module {
     factory<ChatRepository> { ChatRepositoryImpl(get(), get()) }
     viewModel { ChatViewModel(get()) }
-    factory { ChatLocalDataSource(get()) }
+    factory { ChatLocalDataSource(get(), get()) }
 }

@@ -8,5 +8,11 @@ fun ChatHistory.toEntity(): ChatEntity = ChatEntity(
     firstMessagePreview = this.firstMessagePreview,
     createdDate = this.createdDate,
     lastChangedDate = this.lastChangedDate
+)
 
+fun ChatEntity.toDomain(): ChatHistory = ChatHistory(
+    chatId = this.id,
+    firstMessagePreview = this.firstMessagePreview,
+    createdDate = this.createdDate,
+    lastChangedDate = this.lastChangedDate
 )
