@@ -22,8 +22,8 @@ class RegistrationRepositoryImpl(
     private val httpClient: HttpClient,
     private val tokenStorage: TokenStorage
 ) : RegistrationRepository {
-    override suspend fun register(login: String, password: String, email: String): Result<Unit> {
-        return kotlin.runCatching {
+    override suspend fun register(login: String, password: String, email: String): Result<Unit> =
+        kotlin.runCatching {
             val registrationRequest = RegistrationRequest(
                 login = login,
                 password = password,
@@ -37,13 +37,12 @@ class RegistrationRepositoryImpl(
             }
             Unit
         }
-    }
 
-    override suspend fun confirmEmail(login: String, confirmCode: String): Result<Unit> {
-        return kotlin.runCatching {
+    override suspend fun confirmEmail(login: String, confirmCode: String): Result<Unit> =
+        kotlin.runCatching {
             val confirmationEmailRequest = ConfirmationEmailRequest(
                 login = login,
-                confirmCode = confirmCode
+                confirmationCode = confirmCode
             )
 
             val response = httpClient.post(CONFIRMATION_EMAIL_PATH) {
@@ -62,22 +61,19 @@ class RegistrationRepositoryImpl(
                 )
             )
         }
-    }
 
-    override suspend fun retryMail(login: String): Result<Unit> {
-        return kotlin.runCatching {
-            val retryMailRequest = RetryMailRequest(
-                login = login
-            )
+    override suspend fun retryMail(login: String): Result<Unit> = kotlin.runCatching {
+        val retryMailRequest = RetryMailRequest(
+            login = login
+        )
 
-            val response = httpClient.post(RETRY_EMAIL_PATH) {
-                setBody(retryMailRequest)
-                headers {
-                    remove(HTTP_HEADER_AUTHORIZATION)
-                }
+        val response = httpClient.post(RETRY_EMAIL_PATH) {
+            setBody(retryMailRequest)
+            headers {
+                remove(HTTP_HEADER_AUTHORIZATION)
             }
-
-            Unit
         }
+
+        Unit
     }
 }

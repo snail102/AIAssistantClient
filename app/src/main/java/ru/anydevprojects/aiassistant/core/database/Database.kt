@@ -7,8 +7,9 @@ import androidx.room.RoomDatabase
 import ru.anydevprojects.aiassistant.feature.chat.data.dao.ChatDao
 import ru.anydevprojects.aiassistant.feature.chat.data.dao.MessageChatDao
 import ru.anydevprojects.aiassistant.feature.chat.data.models.ChatEntity
+import ru.anydevprojects.aiassistant.feature.chat.data.models.MessageChatEntity
 
-@Database(entities = [(ChatEntity::class)], version = 1)
+@Database(entities = [ChatEntity::class, MessageChatEntity::class], version = 1)
 abstract class AssistantDatabase : RoomDatabase() {
     abstract fun getChatDao(): ChatDao
     abstract fun getMessageChatDao(): MessageChatDao
