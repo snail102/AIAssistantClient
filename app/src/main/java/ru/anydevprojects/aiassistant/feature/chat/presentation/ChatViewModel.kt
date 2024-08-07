@@ -106,6 +106,7 @@ class ChatViewModel(
                             id = (it.messages.lastOrNull()?.id ?: 0) + 1,
                             content = inputtedMessage
                         ),
+                        inputtedMessage = "",
                         errorMessage = ""
                     )
                 }

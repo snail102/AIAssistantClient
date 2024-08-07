@@ -143,42 +143,34 @@ fun ChatScreen(profileToScreen: () -> Unit, viewModel: ChatViewModel = koinViewM
             Column(
                 modifier = Modifier.padding(it)
             ) {
-                if (state.isLoadingCurrentChatMessages) {
-                    Box(
-                        modifier = Modifier,
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                } else {
-                    ChatMessages(
+                ChatMessages(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    messages = state.messages
+                )
+
+                if (state.errorMessage.isNotEmpty()) {
+                    Text(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .weight(1f),
-                        messages = state.messages
-                    )
-
-                    if (state.errorMessage.isNotEmpty()) {
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            text = state.errorMessage
-                        )
-                    }
-
-                    BottomInputControl(
-                        modifier = Modifier.fillMaxWidth(),
-                        isAvailableSendBtn = state.enabledSendBtn,
-                        message = state.inputtedMessage,
-                        onMessageChange = {
-                            viewModel.onIntent(ChatIntent.OnChangeMessage(it))
-                        },
-                        onClickSendBtn = {
-                            viewModel.onIntent(ChatIntent.SendMessage)
-                        }
+                            .padding(16.dp),
+                        text = state.errorMessage
                     )
                 }
+
+                BottomInputControl(
+                    modifier = Modifier.fillMaxWidth(),
+                    isAvailableSendBtn = state.enabledSendBtn,
+                    isLoading = state.isLoadingCurrentChatMessages,
+                    message = state.inputtedMessage,
+                    onMessageChange = {
+                        viewModel.onIntent(ChatIntent.OnChangeMessage(it))
+                    },
+                    onClickSendBtn = {
+                        viewModel.onIntent(ChatIntent.SendMessage)
+                    }
+                )
             }
         }
     }
@@ -239,6 +231,7 @@ private fun MessageItem(isUser: Boolean, content: String, modifier: Modifier = M
 @Composable
 private fun BottomInputControl(
     isAvailableSendBtn: Boolean,
+    isLoading: Boolean,
     message: String,
     onMessageChange: (String) -> Unit,
     onClickSendBtn: () -> Unit,
@@ -259,19 +252,24 @@ private fun BottomInputControl(
         )
 
         Spacer(
-            modifier = Modifier.width(16.dp)
+            modifier = Modifier.width(4.dp)
         )
 
-        IconButton(
-            modifier = Modifier
-                .size(24.dp),
-            enabled = isAvailableSendBtn,
-            onClick = onClickSendBtn
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.Send,
-                contentDescription = "send"
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(48.dp)
             )
+        } else {
+            IconButton(
+                modifier = Modifier,
+                enabled = isAvailableSendBtn,
+                onClick = onClickSendBtn
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.Send,
+                    contentDescription = "send"
+                )
+            }
         }
     }
 }
@@ -310,6 +308,7 @@ private fun BottomInputControlPreview() {
         BottomInputControl(
             isAvailableSendBtn = true,
             message = "133333",
+            isLoading = false,
             onMessageChange = {
             },
             onClickSendBtn = {
